@@ -1,265 +1,832 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <title>我的世界服务器导航</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    body {
-      font-family: "Segoe UI", Arial, sans-serif;
-      background: #f2f6fa;
-      margin: 0;
-      padding: 0;
-    }
-    header {
-      background: #4caf50;
-      color: #fff;
-      padding: 1.5rem 0;
-      text-align: center;
-      font-size: 2rem;
-      letter-spacing: 2px;
-    }
-    .container {
-      max-width: 900px;
-      margin: 2rem auto;
-      padding: 0 1rem;
-    }
-    .add-btn {
-      display: inline-block;
-      background: #2196f3;
-      color: #fff;
-      border: none;
-      border-radius: 5px;
-      padding: 0.7rem 1.3rem;
-      font-size: 1rem;
-      cursor: pointer;
-      margin-bottom: 1.5rem;
-      transition: background 0.2s;
-    }
-    .add-btn:hover {
-      background: #176b9e;
-    }
-    .server-list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
-      gap: 1.5rem;
-    }
-    .server-card {
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-      padding: 1.2rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: box-shadow 0.2s;
-    }
-    .server-card:hover {
-      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
-    }
-    .server-title {
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: #2196f3;
-      margin-bottom: 0.5rem;
-    }
-    .server-desc {
-      color: #555;
-      margin-bottom: 0.7rem;
-      font-size: 0.98rem;
-    }
-    .server-tags {
-      margin-bottom: 0.7rem;
-    }
-    .tag {
-      display: inline-block;
-      background: #e0e7ef;
-      color: #4caf50;
-      border-radius: 4px;
-      padding: 2px 7px;
-      font-size: 0.85rem;
-      margin-right: 5px;
-      margin-bottom: 3px;
-    }
-    .server-info {
-      font-size: 0.97rem;
-      margin-bottom: 0.6rem;
-    }
-    .server-ip {
-      background: #2196f3;
-      color: #fff;
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-weight: bold;
-      font-size: 0.98rem;
-      display: inline-block;
-    }
-    /* 弹窗表单样式 */
-    .modal-bg {
-      position: fixed;
-      top:0; left:0; right:0; bottom:0;
-      background: rgba(0,0,0,0.3);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 1000;
-    }
-    .modal {
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.18);
-      padding: 2rem 2.2rem;
-      max-width: 380px;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-    }
-    .modal label {
-      margin-top: 1rem;
-      margin-bottom: 0.3rem;
-      font-weight: bold;
-    }
-    .modal input, .modal textarea {
-      width: 100%;
-      padding: 0.5rem;
-      margin-bottom: 0.5rem;
-      border-radius: 4px;
-      border: 1px solid #ddd;
-      font-size: 1rem;
-    }
-    .modal .modal-btns {
-      display: flex;
-      justify-content: flex-end;
-      gap: 1rem;
-      margin-top: 1rem;
-    }
-    .modal .modal-btns button {
-      padding: 0.5rem 1.2rem;
-      border-radius: 5px;
-      border: none;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-    .modal .add-server-btn {
-      background: #4caf50;
-      color: #fff;
-    }
-    .modal .cancel-btn {
-      background: #e0e7ef;
-      color: #333;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlockCraft - 我的世界优质服务器</title>
+    <!-- 引入外部资源 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#22c55e', // 我的世界绿色
+                        secondary: '#166534',
+                        dark: '#0f172a',
+                        light: '#f8fafc'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        minecraft: ['"Minecraftia"', 'monospace']
+                    },
+                    animation: {
+                        'float': 'float 3s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'bounce-slow': 'bounce 3s infinite'
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            }
+            .bg-minecraft {
+                background-image: url('https://picsum.photos/id/131/1920/1080');
+                background-size: cover;
+                background-position: center;
+                background-attachment: fixed;
+            }
+            .glass {
+                background: rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 255, 255, 0.18);
+            }
+        }
+    </style>
+    
+    <!-- 引入Minecraft风格字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Minecraftia&display=swap" rel="stylesheet">
 </head>
-<body>
-  <header>
-    我的世界服务器导航
-  </header>
-  <div class="container">
-    <button class="add-btn" id="showModalBtn">➕ 添加服务器</button>
-    <div class="server-list" id="serverList">
-      <!-- 示例服务器1 -->
-    </div>
-  </div>
-  <!-- 弹窗表单 -->
-  <div class="modal-bg" id="modalBg">
-    <div class="modal">
-      <label for="serverName">服务器名称</label>
-      <input type="text" id="serverName" required>
-      <label for="serverDesc">简介</label>
-      <textarea id="serverDesc" rows="2" required></textarea>
-      <label for="serverTags">标签（用逗号分隔）</label>
-      <input type="text" id="serverTags" placeholder="如: 生存,小游戏" required>
-      <label for="serverPlayers">当前人数</label>
-      <input type="text" id="serverPlayers" placeholder="如: 23/100" required>
-      <label for="serverIP">IP地址</label>
-      <input type="text" id="serverIP" required>
-      <div class="modal-btns">
-        <button class="add-server-btn" id="addServerBtn">添加</button>
-        <button class="cancel-btn" id="cancelBtn">取消</button>
-      </div>
-    </div>
-  </div>
-  <script>
-    // 示例服务器（初始数据）
-    const servers = [
-      {
-        name: "天空之城",
-        desc: "自由生存，原版体验，支持多人联机，活跃社区。",
-        tags: ["生存", "原版", "社区"],
-        players: "23/100",
-        ip: "mc.skycity.com"
-      },
-      {
-        name: "红石创造乐园",
-        desc: "创造模式，红石技术交流，内置丰富插件。",
-        tags: ["创造", "红石", "插件"],
-        players: "12/50",
-        ip: "play.redstone.com"
-      },
-      {
-        name: "小游戏乐园",
-        desc: "支持起床战争、饥饿游戏等多种小游戏，适合休闲娱乐。",
-        tags: ["小游戏", "娱乐"],
-        players: "36/200",
-        ip: "mini.mcpark.com"
-      }
-    ];
 
-    // 渲染服务器列表
-    function renderServers() {
-      const list = document.getElementById('serverList');
-      list.innerHTML = '';
-      servers.forEach(srv => {
-        const card = document.createElement('div');
-        card.className = 'server-card';
-        card.innerHTML = `
-          <div class="server-title">${srv.name}</div>
-          <div class="server-desc">${srv.desc}</div>
-          <div class="server-tags">
-            ${srv.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
-          </div>
-          <div class="server-info">当前人数：${srv.players}</div>
-          <div class="server-ip">${srv.ip}</div>
-        `;
-        list.appendChild(card);
-      });
-    }
+<body class="bg-dark text-light font-sans overflow-x-hidden">
+    <!-- 导航栏 -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300">
+        <div class="glass py-4 px-6 md:px-12">
+            <div class="container mx-auto flex justify-between items-center">
+                <div class="flex items-center">
+                    <img src="https://picsum.photos/id/169/60/60" alt="服务器logo" class="w-10 h-10 rounded-full mr-3">
+                    <h1 class="font-minecraft text-2xl text-primary">BlockCraft</h1>
+                </div>
+                
+                <!-- 桌面导航 -->
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="hover:text-primary transition-colors duration-300">首页</a>
+                    <a href="#features" class="hover:text-primary transition-colors duration-300">特色</a>
+                    <a href="#rules" class="hover:text-primary transition-colors duration-300">规则</a>
+                    <a href="#status" class="hover:text-primary transition-colors duration-300">状态</a>
+                    <a href="#gallery" class="hover:text-primary transition-colors duration-300">画廊</a>
+                    <a href="#join" class="hover:text-primary transition-colors duration-300">加入我们</a>
+                </div>
+                
+                <!-- 移动端菜单按钮 -->
+                <button id="menuBtn" class="md:hidden text-2xl">
+                    <i class="fa fa-bars"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- 移动端导航菜单 -->
+        <div id="mobileMenu" class="md:hidden hidden glass absolute w-full">
+            <div class="container mx-auto py-4 px-6 flex flex-col space-y-4">
+                <a href="#home" class="hover:text-primary transition-colors duration-300">首页</a>
+                <a href="#features" class="hover:text-primary transition-colors duration-300">特色</a>
+                <a href="#rules" class="hover:text-primary transition-colors duration-300">规则</a>
+                <a href="#status" class="hover:text-primary transition-colors duration-300">状态</a>
+                <a href="#gallery" class="hover:text-primary transition-colors duration-300">画廊</a>
+                <a href="#join" class="hover:text-primary transition-colors duration-300">加入我们</a>
+            </div>
+        </div>
+    </nav>
 
-    // 弹窗逻辑
-    const modalBg = document.getElementById('modalBg');
-    document.getElementById('showModalBtn').onclick = function () {
-      modalBg.style.display = 'flex';
-    };
-    document.getElementById('cancelBtn').onclick = function () {
-      modalBg.style.display = 'none';
-      clearForm();
-    };
-    function clearForm() {
-      document.getElementById('serverName').value = '';
-      document.getElementById('serverDesc').value = '';
-      document.getElementById('serverTags').value = '';
-      document.getElementById('serverPlayers').value = '';
-      document.getElementById('serverIP').value = '';
-    }
-    document.getElementById('addServerBtn').onclick = function () {
-      // 简单校验
-      const name = document.getElementById('serverName').value.trim();
-      const desc = document.getElementById('serverDesc').value.trim();
-      const tags = document.getElementById('serverTags').value.split(',').map(tag => tag.trim()).filter(tag => tag);
-      const players = document.getElementById('serverPlayers').value.trim();
-      const ip = document.getElementById('serverIP').value.trim();
-      if (!name || !desc || tags.length === 0 || !players || !ip) {
-        alert('请填写完整信息');
-        return;
-      }
-      servers.push({ name, desc, tags, players, ip });
-      renderServers();
-      modalBg.style.display = 'none';
-      clearForm();
-    };
+    <!-- 英雄区域 -->
+    <section id="home" class="bg-minecraft min-h-screen flex items-center relative">
+        <div class="absolute inset-0 bg-dark/60"></div>
+        <div class="container mx-auto px-6 md:px-12 relative z-10 py-24">
+            <div class="max-w-3xl">
+                <h1 class="font-minecraft text-[clamp(2.5rem,6vw,5rem)] leading-tight text-shadow mb-6 animate-float">
+                    欢迎来到 <span class="text-primary">BlockCraft</span>
+                </h1>
+                <p class="text-xl md:text-2xl mb-8 text-gray-200 max-w-2xl">
+                    一个充满创造力和冒险的我的世界服务器，与全球玩家一起探索、建造和生存！
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="#join" class="bg-primary hover:bg-secondary text-white font-bold py-3 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 text-center">
+                        立即加入
+                    </a>
+                    <a href="#features" class="bg-transparent border-2 border-primary text-primary hover:bg-primary/10 font-bold py-3 px-8 rounded-lg transition-all duration-300 text-center">
+                        了解更多
+                    </a>
+                </div>
+                
+                <!-- 服务器状态卡片 -->
+                <div class="mt-12 glass rounded-xl p-6 max-w-md">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-minecraft text-xl">服务器状态</h3>
+                        <span class="flex items-center">
+                            <span class="w-3 h-3 bg-green-500 rounded-full mr-2"></span>
+                            在线
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-gray-400 text-sm">IP地址</p>
+                            <p class="font-minecraft">play.blockcraft.example</p>
+                        </div>
+                        <div>
+                            <p class="text-gray-400 text-sm">在线人数</p>
+                            <p>32/100 玩家</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 向下滚动指示 -->
+        <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 animate-bounce-slow">
+            <a href="#features" class="text-white text-3xl">
+                <i class="fa fa-chevron-down"></i>
+            </a>
+        </div>
+    </section>
 
-    // 初始化
-    renderServers();
-  </script>
+    <!-- 特色区域 -->
+    <section id="features" class="py-20 bg-gradient-to-b from-dark to-dark/90">
+        <div class="container mx-auto px-6 md:px-12">
+            <div class="text-center mb-16">
+                <h2 class="font-minecraft text-[clamp(1.8rem,4vw,3rem)] mb-4">服务器特色</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">探索我们服务器的独特功能，为您提供最佳的我的世界游戏体验</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 特色卡片 1 -->
+                <div class="glass rounded-xl p-6 transition-all duration-300 hover:transform hover:scale-105 hover:shadow-lg hover:shadow-primary/20">
+                    <div class="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center mb-6">
+                        <i class="fa fa-map text-2xl text-primary"></i>
+                    </div>
+                    <h3 class="font-minecraft text-xl mb-3">自定义地图</h3>
+                    <p class="text-gray-400">我们精心设计的自定义地图，包含独特的地形、挑战和隐藏宝藏，为您带来全新的探索体验。</p>
+                </div>
+                
+                <!-- 特色卡片 2 -->
+                <div class="glass rounded-xl p-6 transition-all duration-300 hover:transform hover:scale-105 hover:shadow-lg hover:shadow-primary/20">
+                    <div class="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center mb-6">
+                        <i class="fa fa-users text-2xl text-primary"></i>
+                    </div>
+                    <h3 class="font-minecraft text-xl mb-3">社区活动</h3>
+                    <p class="text-gray-400">定期举办的社区活动，包括建筑比赛、PVP对战和合作挑战，让您与其他玩家共同创造美好回忆。</p>
+                </div>
+                
+                <!-- 特色卡片 3 -->
+                <div class="glass rounded-xl p-6 transition-all duration-300 hover:transform hover:scale-105 hover:shadow-lg hover:shadow-primary/20">
+                    <div class="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center mb-6">
+                        <i class="fa fa-shield text-2xl text-primary"></i>
+                    </div>
+                    <h3 class="font-minecraft text-xl mb-3">安全保障</h3>
+                    <p class="text-gray-400">严格的反作弊系统和活跃的管理员团队，确保所有玩家都能在公平、友好的环境中享受游戏。</p>
+                </div>
+                
+                <!-- 特色卡片 4 -->
+                <div class="glass rounded-xl p-6 transition-all duration-300 hover:transform hover:scale-105 hover:shadow-lg hover:shadow-primary/20">
+                    <div class="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center mb-6">
+                        <i class="fa fa-cogs text-2xl text-primary"></i>
+                    </div>
+                    <h3 class="font-minecraft text-xl mb-3">独特插件</h3>
+                    <p class="text-gray-400">我们开发的专属插件，为游戏增添新的机制和功能，提供与众不同的游戏体验。</p>
+                </div>
+                
+                <!-- 特色卡片 5 -->
+                <div class="glass rounded-xl p-6 transition-all duration-300 hover:transform hover:scale-105 hover:shadow-lg hover:shadow-primary/20">
+                    <div class="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center mb-6">
+                        <i class="fa fa-gift text-2xl text-primary"></i>
+                    </div>
+                    <h3 class="font-minecraft text-xl mb-3">奖励系统</h3>
+                    <p class="text-gray-400">活跃玩家可获得丰富奖励，包括独特物品、称号和权限，让您的努力得到认可。</p>
+                </div>
+                
+                <!-- 特色卡片 6 -->
+                <div class="glass rounded-xl p-6 transition-all duration-300 hover:transform hover:scale-105 hover:shadow-lg hover:shadow-primary/20">
+                    <div class="w-14 h-14 bg-primary/20 rounded-full flex items-center justify-center mb-6">
+                        <i class="fa fa-rocket text-2xl text-primary"></i>
+                    </div>
+                    <h3 class="font-minecraft text-xl mb-3">稳定运行</h3>
+                    <p class="text-gray-400">高性能服务器和99.9%的在线率，确保您随时都能连接并享受流畅的游戏体验。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 游戏模式 -->
+    <section class="py-20 bg-dark relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full bg-[url('https://picsum.photos/id/129/1920/1080')] opacity-10 bg-fixed bg-center bg-cover"></div>
+        <div class="container mx-auto px-6 md:px-12 relative z-10">
+            <div class="text-center mb-16">
+                <h2 class="font-minecraft text-[clamp(1.8rem,4vw,3rem)] mb-4">游戏模式</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">我们提供多种游戏模式，满足不同玩家的喜好</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- 生存模式 -->
+                <div class="relative rounded-xl overflow-hidden group h-80">
+                    <img src="https://picsum.photos/id/177/600/400" alt="生存模式" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 p-6 w-full">
+                        <h3 class="font-minecraft text-2xl mb-2">生存模式</h3>
+                        <p class="text-gray-300 mb-4">经典的生存体验，收集资源、建造家园、对抗怪物，与其他玩家合作或竞争。</p>
+                        <a href="#join" class="inline-block text-primary hover:text-secondary transition-colors">
+                            开始生存 <i class="fa fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- 创造模式 -->
+                <div class="relative rounded-xl overflow-hidden group h-80">
+                    <img src="https://picsum.photos/id/188/600/400" alt="创造模式" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 p-6 w-full">
+                        <h3 class="font-minecraft text-2xl mb-2">创造模式</h3>
+                        <p class="text-gray-300 mb-4">拥有无限资源，尽情发挥你的创造力，建造宏伟的建筑和复杂的机械装置。</p>
+                        <a href="#join" class="inline-block text-primary hover:text-secondary transition-colors">
+                            开始创造 <i class="fa fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- PVP模式 -->
+                <div class="relative rounded-xl overflow-hidden group h-80">
+                    <img src="https://picsum.photos/id/235/600/400" alt="PVP模式" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent"></div>
+                    <div class="absolute bottom-0 left-0 p-6 w-full">
+                        <h3 class="font-minecraft text-2xl mb-2">PVP模式</h3>
+                        <p class="text-gray-300 mb-4">与其他玩家进行激烈的对战，展示你的战斗技巧，赢取荣誉和奖励。</p>
+                        <a href="#join" class="inline-block text-primary hover:text-secondary transition-colors">
+                            开始战斗 <i class="fa fa-arrow-right ml-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 服务器规则 -->
+    <section id="rules" class="py-20 bg-gradient-to-b from-dark/90 to-dark">
+        <div class="container mx-auto px-6 md:px-12">
+            <div class="text-center mb-16">
+                <h2 class="font-minecraft text-[clamp(1.8rem,4vw,3rem)] mb-4">服务器规则</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">为了维护良好的游戏环境，请所有玩家遵守以下规则</p>
+            </div>
+            
+            <div class="glass rounded-xl p-8 max-w-4xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                                <span>禁止使用任何作弊程序或漏洞</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                                <span>尊重所有玩家，禁止辱骂、歧视或骚扰他人</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                                <span>禁止 griefing（破坏他人建筑）</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                                <span>禁止刷屏或发送垃圾信息</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                                <span>禁止分享不适当内容或链接</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div>
+                        <ul class="space-y-4">
+                            <li class="flex items-start">
+                                <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                                <span>禁止利用游戏机制进行不正当获利</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                                <span>建造应符合服务器主题，禁止不雅建筑</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                                <span>服从管理员的合理指令</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                                <span>禁止多账号滥用或规避惩罚</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                                <span>享受游戏，友好互动，共同维护社区</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="mt-8 pt-6 border-t border-gray-700">
+                    <p class="text-gray-400 text-center">违反规则将根据情节轻重受到警告、禁言、暂时封禁或永久封禁的处罚</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 服务器状态 -->
+    <section id="status" class="py-20 bg-dark relative">
+        <div class="absolute top-0 left-0 w-full h-full bg-[url('https://picsum.photos/id/111/1920/1080')] opacity-10 bg-fixed bg-center bg-cover"></div>
+        <div class="container mx-auto px-6 md:px-12 relative z-10">
+            <div class="text-center mb-16">
+                <h2 class="font-minecraft text-[clamp(1.8rem,4vw,3rem)] mb-4">服务器状态</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">实时监控我们的服务器性能和在线情况</p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- 服务器信息 -->
+                <div class="glass rounded-xl p-6 lg:col-span-1">
+                    <h3 class="font-minecraft text-xl mb-6">服务器信息</h3>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <p class="text-gray-400 text-sm mb-1">服务器版本</p>
+                            <p>1.20.1 原版优化</p>
+                        </div>
+                        
+                        <div>
+                            <p class="text-gray-400 text-sm mb-1">在线人数</p>
+                            <p class="text-2xl font-bold text-primary">32/100</p>
+                        </div>
+                        
+                        <div>
+                            <p class="text-gray-400 text-sm mb-1">服务器位置</p>
+                            <p>中国 上海</p>
+                        </div>
+                        
+                        <div>
+                            <p class="text-gray-400 text-sm mb-1">延迟</p>
+                            <p>24ms</p>
+                        </div>
+                        
+                        <div>
+                            <p class="text-gray-400 text-sm mb-1">uptime</p>
+                            <p>99.9%</p>
+                        </div>
+                        
+                        <div>
+                            <p class="text-gray-400 text-sm mb-1">最后重启</p>
+                            <p>2023-06-15 03:00</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 在线玩家和性能图表 -->
+                <div class="lg:col-span-2 space-y-8">
+                    <!-- 在线玩家 -->
+                    <div class="glass rounded-xl p-6">
+                        <h3 class="font-minecraft text-xl mb-4">在线玩家</h3>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="bg-primary/20 text-primary px-3 py-1 rounded-full text-sm">Steve123</span>
+                            <span class="bg-primary/20 text-primary px-3 py-1 rounded-full text-sm">Alex456</span>
+                            <span class="bg-primary/20 text-primary px-3 py-1 rounded-full text-sm">BuilderPro</span>
+                            <span class="bg-primary/20 text-primary px-3 py-1 rounded-full text-sm">MineMaster</span>
+                            <span class="bg-primary/20 text-primary px-3 py-1 rounded-full text-sm">CraftQueen</span>
+                            <span class="bg-primary/20 text-primary px-3 py-1 rounded-full text-sm">RedstoneWiz</span>
+                            <span class="bg-primary/20 text-primary px-3 py-1 rounded-full text-sm">AdventureMan</span>
+                            <span class="bg-primary/20 text-primary px-3 py-1 rounded-full text-sm">Survivalist</span>
+                            <span class="bg-gray-700 px-3 py-1 rounded-full text-sm">+24 更多</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 性能图表 -->
+                    <div class="glass rounded-xl p-6">
+                        <h3 class="font-minecraft text-xl mb-4">玩家活跃度统计</h3>
+                        <div class="h-64">
+                            <canvas id="playerChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 玩家画廊 -->
+    <section id="gallery" class="py-20 bg-gradient-to-b from-dark to-dark/90">
+        <div class="container mx-auto px-6 md:px-12">
+            <div class="text-center mb-16">
+                <h2 class="font-minecraft text-[clamp(1.8rem,4vw,3rem)] mb-4">玩家作品展示</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">欣赏我们社区玩家创造的精彩作品</p>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- 作品 1 -->
+                <div class="group relative rounded-xl overflow-hidden h-64">
+                    <img src="https://picsum.photos/id/103/600/400" alt="玩家建造的城堡" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                        <div class="p-4 w-full">
+                            <h3 class="font-minecraft">宏伟城堡</h3>
+                            <p class="text-sm text-gray-300">作者: BuilderPro</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 作品 2 -->
+                <div class="group relative rounded-xl overflow-hidden h-64">
+                    <img src="https://picsum.photos/id/104/600/400" alt="玩家建造的现代城市" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                        <div class="p-4 w-full">
+                            <h3 class="font-minecraft">现代都市</h3>
+                            <p class="text-sm text-gray-300">作者: CityPlanner</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 作品 3 -->
+                <div class="group relative rounded-xl overflow-hidden h-64">
+                    <img src="https://picsum.photos/id/105/600/400" alt="玩家建造的红石装置" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                        <div class="p-4 w-full">
+                            <h3 class="font-minecraft">红石工厂</h3>
+                            <p class="text-sm text-gray-300">作者: RedstoneWiz</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 作品 4 -->
+                <div class="group relative rounded-xl overflow-hidden h-64">
+                    <img src="https://picsum.photos/id/106/600/400" alt="玩家建造的中世纪村庄" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                        <div class="p-4 w-full">
+                            <h3 class="font-minecraft">中世纪村庄</h3>
+                            <p class="text-sm text-gray-300">作者: MedievalMan</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 作品 5 -->
+                <div class="group relative rounded-xl overflow-hidden h-64">
+                    <img src="https://picsum.photos/id/107/600/400" alt="玩家建造的海底基地" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                        <div class="p-4 w-full">
+                            <h3 class="font-minecraft">海底基地</h3>
+                            <p class="text-sm text-gray-300">作者: OceanExplorer</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 作品 6 -->
+                <div class="group relative rounded-xl overflow-hidden h-64">
+                    <img src="https://picsum.photos/id/108/600/400" alt="玩家建造的太空站" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                        <div class="p-4 w-full">
+                            <h3 class="font-minecraft">太空站</h3>
+                            <p class="text-sm text-gray-300">作者: AstroBuilder</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <button class="bg-transparent border-2 border-primary text-primary hover:bg-primary/10 font-bold py-3 px-8 rounded-lg transition-all duration-300">
+                    查看更多作品
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 加入我们 -->
+    <section id="join" class="py-20 bg-dark relative">
+        <div class="absolute top-0 left-0 w-full h-full bg-[url('https://picsum.photos/id/116/1920/1080')] opacity-10 bg-fixed bg-center bg-cover"></div>
+        <div class="container mx-auto px-6 md:px-12 relative z-10">
+            <div class="text-center mb-16">
+                <h2 class="font-minecraft text-[clamp(1.8rem,4vw,3rem)] mb-4">加入我们</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">只需简单几步，即可加入我们的我的世界服务器社区</p>
+            </div>
+            
+            <div class="max-w-4xl mx-auto">
+                <div class="glass rounded-xl p-8">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- 加入步骤 -->
+                        <div>
+                            <h3 class="font-minecraft text-xl mb-6">加入步骤</h3>
+                            
+                            <div class="space-y-6">
+                                <div class="flex">
+                                    <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mr-4 mt-1">1</div>
+                                    <div>
+                                        <h4 class="font-bold mb-1">准备好我的世界</h4>
+                                        <p class="text-gray-400">确保你拥有1.20.1版本的我的世界游戏客户端</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex">
+                                    <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mr-4 mt-1">2</div>
+                                    <div>
+                                        <h4 class="font-bold mb-1">添加服务器</h4>
+                                        <p class="text-gray-400">在游戏中点击"添加服务器"，输入我们的服务器信息</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex">
+                                    <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mr-4 mt-1">3</div>
+                                    <div>
+                                        <h4 class="font-bold mb-1">加入游戏</h4>
+                                        <p class="text-gray-400">点击连接，开始你的BlockCraft冒险之旅</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex">
+                                    <div class="w-8 h-8 bg-primary rounded-full flex items-center justify-center flex-shrink-0 mr-4 mt-1">4</div>
+                                    <div>
+                                        <h4 class="font-bold mb-1">加入社区</h4>
+                                        <p class="text-gray-400">加入我们的Discord服务器，获取最新资讯和活动信息</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 服务器信息 -->
+                        <div>
+                            <h3 class="font-minecraft text-xl mb-6">服务器信息</h3>
+                            
+                            <div class="space-y-6">
+                                <div>
+                                    <p class="text-gray-400 text-sm mb-1">服务器IP</p>
+                                    <div class="flex items-center">
+                                        <input type="text" value="play.blockcraft.example" class="bg-dark/50 border border-gray-700 rounded-l-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary" readonly>
+                                        <button id="copyIp" class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-r-lg transition-colors">
+                                            <i class="fa fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <p class="text-gray-400 text-sm mb-1">端口</p>
+                                    <p>25565（默认端口）</p>
+                                </div>
+                                
+                                <div>
+                                    <p class="text-gray-400 text-sm mb-1">版本</p>
+                                    <p>1.20.1</p>
+                                </div>
+                                
+                                <div>
+                                    <p class="text-gray-400 text-sm mb-1">Discord社区</p>
+                                    <a href="#" class="flex items-center text-primary hover:text-secondary transition-colors">
+                                        <i class="fa fa-discord mr-2"></i>
+                                        discord.gg/blockcraft
+                                    </a>
+                                </div>
+                                
+                                <div class="pt-4">
+                                    <a href="#" class="block w-full bg-primary hover:bg-secondary text-white font-bold py-3 px-6 rounded-lg transition-all duration-300 text-center">
+                                        查看详细教程
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 管理员团队 -->
+    <section class="py-20 bg-gradient-to-b from-dark/90 to-dark">
+        <div class="container mx-auto px-6 md:px-12">
+            <div class="text-center mb-16">
+                <h2 class="font-minecraft text-[clamp(1.8rem,4vw,3rem)] mb-4">管理员团队</h2>
+                <p class="text-gray-400 max-w-2xl mx-auto">认识我们的管理员团队，他们致力于维护服务器的良好环境</p>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 管理员 1 -->
+                <div class="glass rounded-xl p-6 text-center transition-transform duration-300 hover:scale-105">
+                    <div class="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-2 border-primary">
+                        <img src="https://picsum.photos/id/201/200/200" alt="管理员头像" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="font-minecraft text-lg">BlockMaster</h3>
+                    <p class="text-primary text-sm mb-2">服务器所有者</p>
+                    <p class="text-gray-400 text-sm">负责服务器整体运营和维护</p>
+                </div>
+                
+                <!-- 管理员 2 -->
+                <div class="glass rounded-xl p-6 text-center transition-transform duration-300 hover:scale-105">
+                    <div class="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-2 border-primary">
+                        <img src="https://picsum.photos/id/202/200/200" alt="管理员头像" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="font-minecraft text-lg">AdminAlex</h3>
+                    <p class="text-primary text-sm mb-2">高级管理员</p>
+                    <p class="text-gray-400 text-sm">负责玩家管理和社区事务</p>
+                </div>
+                
+                <!-- 管理员 3 -->
+                <div class="glass rounded-xl p-6 text-center transition-transform duration-300 hover:scale-105">
+                    <div class="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-2 border-primary">
+                        <img src="https://picsum.photos/id/203/200/200" alt="管理员头像" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="font-minecraft text-lg">TechWizard</h3>
+                    <p class="text-primary text-sm mb-2">技术管理员</p>
+                    <p class="text-gray-400 text-sm">负责服务器技术维护和插件开发</p>
+                </div>
+                
+                <!-- 管理员 4 -->
+                <div class="glass rounded-xl p-6 text-center transition-transform duration-300 hover:scale-105">
+                    <div class="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-2 border-primary">
+                        <img src="https://picsum.photos/id/204/200/200" alt="管理员头像" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="font-minecraft text-lg">ModSteve</h3>
+                    <p class="text-primary text-sm mb-2">版主</p>
+                    <p class="text-gray-400 text-sm">负责日常聊天管理和玩家帮助</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark border-t border-gray-800 py-12">
+        <div class="container mx-auto px-6 md:px-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                <div>
+                    <div class="flex items-center mb-4">
+                        <img src="https://picsum.photos/id/169/60/60" alt="服务器logo" class="w-10 h-10 rounded-full mr-3">
+                        <h2 class="font-minecraft text-2xl text-primary">BlockCraft</h2>
+                    </div>
+                    <p class="text-gray-400 mb-4">打造最佳的我的世界游戏体验，与全球玩家一起创造无限可能。</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+                            <i class="fa fa-youtube-play text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+                            <i class="fa fa-discord text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+                            <i class="fa fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-primary transition-colors">
+                            <i class="fa fa-instagram text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="font-bold text-lg mb-4">快速链接</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#home" class="text-gray-400 hover:text-primary transition-colors">首页</a></li>
+                        <li><a href="#features" class="text-gray-400 hover:text-primary transition-colors">特色</a></li>
+                        <li><a href="#rules" class="text-gray-400 hover:text-primary transition-colors">规则</a></li>
+                        <li><a href="#status" class="text-gray-400 hover:text-primary transition-colors">状态</a></li>
+                        <li><a href="#gallery" class="text-gray-400 hover:text-primary transition-colors">画廊</a></li>
+                        <li><a href="#join" class="text-gray-400 hover:text-primary transition-colors">加入我们</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-bold text-lg mb-4">支持</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-primary transition-colors">帮助中心</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-primary transition-colors">常见问题</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-primary transition-colors">联系我们</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-primary transition-colors">举报玩家</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-primary transition-colors">服务器商店</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-bold text-lg mb-4">订阅更新</h3>
+                    <p class="text-gray-400 mb-4">订阅我们的新闻通讯，获取服务器最新资讯和活动信息。</p>
+                    <form class="flex">
+                        <input type="email" placeholder="你的邮箱地址" class="bg-dark/50 border border-gray-700 rounded-l-lg px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-primary">
+                        <button type="submit" class="bg-primary hover:bg-secondary text-white px-4 py-2 rounded-r-lg transition-colors">
+                            <i class="fa fa-paper-plane"></i>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 text-center text-gray-500 text-sm">
+                <p>&copy; 2023 BlockCraft 我的世界服务器. 保留所有权利.</p>
+                <p class="mt-2">我的世界是Mojang Studios的商标. 本服务器与Mojang Studios无关联.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 导航栏滚动效果
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('bg-dark/90', 'shadow-lg');
+                navbar.classList.remove('bg-transparent');
+            } else {
+                navbar.classList.remove('bg-dark/90', 'shadow-lg');
+                navbar.classList.add('bg-transparent');
+            }
+        });
+        
+        // 移动端菜单切换
+        const menuBtn = document.getElementById('menuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        menuBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            if (mobileMenu.classList.contains('hidden')) {
+                menuBtn.innerHTML = '<i class="fa fa-bars"></i>';
+            } else {
+                menuBtn.innerHTML = '<i class="fa fa-times"></i>';
+            }
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                // 关闭移动端菜单
+                if (!mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                    menuBtn.innerHTML = '<i class="fa fa-bars"></i>';
+                }
+                
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // 复制IP地址
+        const copyIpBtn = document.getElementById('copyIp');
+        copyIpBtn.addEventListener('click', () => {
+            const ipInput = document.querySelector('input[value="play.blockcraft.example"]');
+            ipInput.select();
+            document.execCommand('copy');
+            
+            // 显示复制成功提示
+            const originalText = copyIpBtn.innerHTML;
+            copyIpBtn.innerHTML = '<i class="fa fa-check"></i>';
+            setTimeout(() => {
+                copyIpBtn.innerHTML = originalText;
+            }, 2000);
+        });
+        
+        // 玩家活跃度图表
+        const ctx = document.getElementById('playerChart').getContext('2d');
+        const playerChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['周一', '周二', '周三', '周四', '周五', '周六', '周日'],
+                datasets: [{
+                    label: '平均在线玩家',
+                    data: [18, 22, 25, 30, 45, 68, 52],
+                    backgroundColor: 'rgba(34, 197, 94, 0.2)',
+                    borderColor: 'rgba(34, 197, 94, 1)',
+                    borderWidth: 2,
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        ticks: {
+                            color: 'rgba(255, 255, 255, 0.7)'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: 'rgba(255, 255, 255, 0.7)'
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>
