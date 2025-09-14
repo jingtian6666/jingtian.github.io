@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>我的世界服务器导航</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: "Segoe UI", Arial, sans-serif;
+      background: #f2f6fa;
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: #4caf50;
+      color: #fff;
+      padding: 1.5rem 0;
+      text-align: center;
+      font-size: 2rem;
+      letter-spacing: 2px;
+    }
+    .container {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+    .add-btn {
+      display: inline-block;
+      background: #2196f3;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 0.7rem 1.3rem;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-bottom: 1.5rem;
+      transition: background 0.2s;
+    }
+    .add-btn:hover {
+      background: #176b9e;
+    }
+    .server-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 1.5rem;
+    }
+    .server-card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+      padding: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: box-shadow 0.2s;
+    }
+    .server-card:hover {
+      box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+    }
+    .server-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #2196f3;
+      margin-bottom: 0.5rem;
+    }
+    .server-desc {
+      color: #555;
+      margin-bottom: 0.7rem;
+      font-size: 0.98rem;
+    }
+    .server-tags {
+      margin-bottom: 0.7rem;
+    }
+    .tag {
+      display: inline-block;
+      background: #e0e7ef;
+      color: #4caf50;
+      border-radius: 4px;
+      padding: 2px 7px;
+      font-size: 0.85rem;
+      margin-right: 5px;
+      margin-bottom: 3px;
+    }
+    .server-info {
+      font-size: 0.97rem;
+      margin-bottom: 0.6rem;
+    }
+    .server-ip {
+      background: #2196f3;
+      color: #fff;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 0.98rem;
+      display: inline-block;
+    }
+    /* 弹窗表单样式 */
+    .modal-bg {
+      position: fixed;
+      top:0; left:0; right:0; bottom:0;
+      background: rgba(0,0,0,0.3);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+      padding: 2rem 2.2rem;
+      max-width: 380px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .modal label {
+      margin-top: 1rem;
+      margin-bottom: 0.3rem;
+      font-weight: bold;
+    }
+    .modal input, .modal textarea {
+      width: 100%;
+      padding: 0.5rem;
+      margin-bottom: 0.5rem;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      font-size: 1rem;
+    }
+    .modal .modal-btns {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    .modal .modal-btns button {
+      padding: 0.5rem 1.2rem;
+      border-radius: 5px;
+      border: none;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    .modal .add-server-btn {
+      background: #4caf50;
+      color: #fff;
+    }
+    .modal .cancel-btn {
+      background: #e0e7ef;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    我的世界服务器导航
+  </header>
+  <div class="container">
+    <button class="add-btn" id="showModalBtn">➕ 添加服务器</button>
+    <div class="server-list" id="serverList">
+      <!-- 示例服务器1 -->
+    </div>
+  </div>
+  <!-- 弹窗表单 -->
+  <div class="modal-bg" id="modalBg">
+    <div class="modal">
+      <label for="serverName">服务器名称</label>
+      <input type="text" id="serverName" required>
+      <label for="serverDesc">简介</label>
+      <textarea id="serverDesc" rows="2" required></textarea>
+      <label for="serverTags">标签（用逗号分隔）</label>
+      <input type="text" id="serverTags" placeholder="如: 生存,小游戏" required>
+      <label for="serverPlayers">当前人数</label>
+      <input type="text" id="serverPlayers" placeholder="如: 23/100" required>
+      <label for="serverIP">IP地址</label>
+      <input type="text" id="serverIP" required>
+      <div class="modal-btns">
+        <button class="add-server-btn" id="addServerBtn">添加</button>
+        <button class="cancel-btn" id="cancelBtn">取消</button>
+      </div>
+    </div>
+  </div>
+  <script>
+    // 示例服务器（初始数据）
+    const servers = [
+      {
+        name: "天空之城",
+        desc: "自由生存，原版体验，支持多人联机，活跃社区。",
+        tags: ["生存", "原版", "社区"],
+        players: "23/100",
+        ip: "mc.skycity.com"
+      },
+      {
+        name: "红石创造乐园",
+        desc: "创造模式，红石技术交流，内置丰富插件。",
+        tags: ["创造", "红石", "插件"],
+        players: "12/50",
+        ip: "play.redstone.com"
+      },
+      {
+        name: "小游戏乐园",
+        desc: "支持起床战争、饥饿游戏等多种小游戏，适合休闲娱乐。",
+        tags: ["小游戏", "娱乐"],
+        players: "36/200",
+        ip: "mini.mcpark.com"
+      }
+    ];
+
+    // 渲染服务器列表
+    function renderServers() {
+      const list = document.getElementById('serverList');
+      list.innerHTML = '';
+      servers.forEach(srv => {
+        const card = document.createElement('div');
+        card.className = 'server-card';
+        card.innerHTML = `
+          <div class="server-title">${srv.name}</div>
+          <div class="server-desc">${srv.desc}</div>
+          <div class="server-tags">
+            ${srv.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+          </div>
+          <div class="server-info">当前人数：${srv.players}</div>
+          <div class="server-ip">${srv.ip}</div>
+        `;
+        list.appendChild(card);
+      });
+    }
+
+    // 弹窗逻辑
+    const modalBg = document.getElementById('modalBg');
+    document.getElementById('showModalBtn').onclick = function () {
+      modalBg.style.display = 'flex';
+    };
+    document.getElementById('cancelBtn').onclick = function () {
+      modalBg.style.display = 'none';
+      clearForm();
+    };
+    function clearForm() {
+      document.getElementById('serverName').value = '';
+      document.getElementById('serverDesc').value = '';
+      document.getElementById('serverTags').value = '';
+      document.getElementById('serverPlayers').value = '';
+      document.getElementById('serverIP').value = '';
+    }
+    document.getElementById('addServerBtn').onclick = function () {
+      // 简单校验
+      const name = document.getElementById('serverName').value.trim();
+      const desc = document.getElementById('serverDesc').value.trim();
+      const tags = document.getElementById('serverTags').value.split(',').map(tag => tag.trim()).filter(tag => tag);
+      const players = document.getElementById('serverPlayers').value.trim();
+      const ip = document.getElementById('serverIP').value.trim();
+      if (!name || !desc || tags.length === 0 || !players || !ip) {
+        alert('请填写完整信息');
+        return;
+      }
+      servers.push({ name, desc, tags, players, ip });
+      renderServers();
+      modalBg.style.display = 'none';
+      clearForm();
+    };
+
+    // 初始化
+    renderServers();
+  </script>
+</body>
+</html>
