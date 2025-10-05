@@ -1,0 +1,1118 @@
+<html lang="zh-CN"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的世界 | 服务器集群</title>
+    <!-- 引入外部资源 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#5E9C31', // 我的世界绿色
+                        secondary: '#D9A566', // 木头棕色
+                        accent: '#3498DB', // 蓝色强调
+                        dark: '#1E293B', // 深色背景
+                        light: '#F8FAFC' // 浅色背景
+                    },
+                    fontFamily: {
+                        minecraft: ['"Minecraftia"', 'sans-serif'],
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .text-shadow {
+                text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            }
+            .block-shadow {
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+            }
+            .sponsor-glow {
+                box-shadow: 0 0 15px rgba(94, 156, 49, 0.5);
+            }
+            .sponsor-badge {
+                position: relative;
+                overflow: hidden;
+            }
+            .sponsor-badge::after {
+                content: '';
+                position: absolute;
+                top: -50%;
+                left: -50%;
+                width: 200%;
+                height: 200%;
+                background: linear-gradient(
+                    to right,
+                    rgba(255, 255, 255, 0) 0%,
+                    rgba(255, 255, 255, 0.3) 50%,
+                    rgba(255, 255, 255, 0) 100%
+                );
+                transform: rotate(30deg);
+                animation: shine 3s infinite;
+            }
+            @keyframes shine {
+                0% { transform: rotate(30deg) translateX(-100%); }
+                100% { transform: rotate(30deg) translateX(100%); }
+            }
+        }
+    </style>
+    
+    <!-- 字体引入 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Minecraftia&amp;display=swap" rel="stylesheet">
+</head>
+
+<body class="bg-dark text-light font-sans overflow-x-hidden">
+    <!-- 导航栏 -->
+    <header id="navbar" class="fixed w-full z-50 transition-all duration-300 bg-dark/80 backdrop-blur-md">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/f0cc298776b847d7a3a15ce265f1de8b~tplv-a9rns2rl98-image.image?rcl=202509191919479D91879538E7D38FA772&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1758885587&amp;x-signature=DQwOiCXdEnWnY%2FnsCo4khie5z6E%3D" alt="服务器LOGO" class="w-10 h-10 rounded-lg">
+                <h1 class="text-xl md:text-2xl font-minecraft text-primary">jingtian的优质服务器</h1>
+            </div>
+            
+            <!-- 桌面导航 -->
+            <nav class="hidden md:flex space-x-8">
+                <a href="#home" class="hover:text-primary transition-colors font-medium">首页</a>
+                <a href="#servers" class="hover:text-primary transition-colors font-medium">服务器列表</a>
+                <a href="#features" class="hover:text-primary transition-colors font-medium">特色玩法</a>
+                <a href="#rules" class="hover:text-primary transition-colors font-medium">服务器规则</a>
+                <a href="#join" class="hover:text-primary transition-colors font-medium">加入我们</a>
+                <a href="#sponsor" class="hover:text-secondary text-secondary transition-colors font-medium">赞助我们</a>
+            </nav>
+            
+            <!-- 移动端菜单按钮 -->
+            <button id="menuBtn" class="md:hidden text-2xl">
+                <i class="fa fa-bars"></i>
+            </button>
+        </div>
+        
+        <!-- 移动端导航菜单 -->
+        <div id="mobileMenu" class="md:hidden hidden bg-dark/95 backdrop-blur-md">
+            <div class="container mx-auto px-4 py-3 flex flex-col space-y-4">
+                <a href="#home" class="py-2 hover:text-primary transition-colors font-medium">首页</a>
+                <a href="#servers" class="py-2 hover:text-primary transition-colors font-medium">服务器列表</a>
+                <a href="#features" class="py-2 hover:text-primary transition-colors font-medium">特色玩法</a>
+                <a href="#rules" class="py-2 hover:text-primary transition-colors font-medium">服务器规则</a>
+                <a href="#join" class="py-2 hover:text-primary transition-colors font-medium">加入我们</a>
+                <a href="#sponsor" class="py-2 hover:text-secondary text-secondary transition-colors font-medium">赞助我们</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 英雄区域 -->
+    <section id="home" class="relative min-h-screen flex items-center justify-center bg-pattern bg-dark/70">
+        <div class="absolute inset-0 bg-gradient-to-b from-dark/40 to-dark/90"></div>
+        <div class="container mx-auto px-4 z-10 text-center">
+            <h1 class="text-[clamp(2.5rem,6vw,5rem)] font-minecraft mb-6 text-primary text-shadow">Jingtian的优质服务器</h1>
+            <p class="text-[clamp(1rem,2vw,1.5rem)] mb-10 max-w-3xl mx-auto text-light/90">玩服务器，必须jingtian的！这里提供多元化的Minecraft游戏体验，包括模组化的落幕曲和纯净的原版1.21.4生存，满足不同玩家的需求</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <a href="#join" class="px-8 py-3 bg-primary hover:bg-primary/80 text-white rounded-lg font-semibold transition-all transform hover:scale-105 block-shadow">立即加入</a>
+                <a href="#sponsor" class="px-8 py-3 bg-transparent border-2 border-secondary hover:bg-secondary/20 text-secondary rounded-lg font-semibold transition-all transform hover:scale-105">赞助支持</a>
+            </div>
+            
+            <!-- 滚动指示器 -->
+            <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+                <a href="#servers" class="text-light/70 hover:text-primary transition-colors">
+                    <i class="fa fa-chevron-down text-2xl"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 服务器列表 -->
+    <section id="servers" class="py-20 bg-gradient-to-b from-dark to-dark/95">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,4vw,3rem)] font-minecraft text-primary mb-4">我们的服务器</h2>
+                <div class="w-32 h-1 bg-secondary mx-auto"></div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-12">
+                <!-- 落幕曲服务器 -->
+                <div class="bg-dark/60 backdrop-blur-sm rounded-lg overflow-hidden border border-primary/20 transition-all hover:border-primary/50 transform hover:-translate-y-2 duration-300 block-shadow">
+                    <div class="relative">
+                        <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/46c03c63bff840ebac4d8de5bc3e5681~tplv-a9rns2rl98-image.image?rcl=20250919183552186FED5B9307783AF2F2&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1758882953&amp;x-signature=Z%2B5azzOW37tJtXia8BiHG5ld3M0%3D" alt="我的世界落幕曲服务器场景" class="w-full h-64 object-cover">
+                        <div class="absolute -bottom-6 -left-6 bg-primary text-white p-4 rounded-lg block-shadow hidden md:block">
+                            <p class="font-minecraft">版本: 1.4.6</p>
+                        </div>
+                        <div class="absolute -top-6 -right-6 bg-secondary text-dark p-4 rounded-lg block-shadow hidden md:block">
+                            <p class="font-minecraft">模组生存</p>
+                        </div>
+                    </div>
+                    <div class="p-8 pt-12">
+                        <h3 class="text-2xl font-bold mb-4 text-secondary">落幕曲的故事</h3>
+                        <p class="mb-4 text-light/80 leading-relaxed">jingtian的落幕曲服务器开始于2025年8月20日，是致力于提供纯粹Minecraft模组生存体验的。我们相信，游戏的乐趣来自于自由的建造、探索和与他人协作的过程。</p>
+                        <p class="mb-6 text-light/80 leading-relaxed">我们的服务器融合了经典生存与落幕曲等创新元素，既保留了Minecraft原汁原味的游戏体验，又加入了精心设计的特色玩法，让每一位玩家都能找到属于自己的乐趣。拔刀剑和枪械(tacz)为主要流派的新手难度整合包，拥有完整细致的FTB任务系统。 整体流程舒适，弱指引，任务描写详细，没有锁阶段的设定，一切自由交给玩家自己，你想要什么样的结局、什么样的落幕应该是用自己的手去书写。</p>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-dark/50 p-3 rounded-lg border border-primary/30">
+                                <div class="text-2xl text-primary mb-1"><i class="fa fa-users"></i></div>
+                                <h4 class="font-semibold mb-1 text-sm">活跃社区</h4>
+                                <p class="text-xs text-light/70">超过50名注册玩家</p>
+                            </div>
+                            <div class="bg-dark/50 p-3 rounded-lg border border-primary/30">
+                                <div class="text-2xl text-primary mb-1"><i class="fa fa-clock-o"></i></div>
+                                <h4 class="font-semibold mb-1 text-sm">稳定运行</h4>
+                                <p class="text-xs text-light/70">90.9999% 在线率保证</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 原版1.21.4服务器 -->
+                <div class="bg-dark/60 backdrop-blur-sm rounded-lg overflow-hidden border border-primary/20 transition-all hover:border-primary/50 transform hover:-translate-y-2 duration-300 block-shadow">
+                    <div class="relative">
+                        <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/46f4a9f89fbc412081af2341d2196401~tplv-a9rns2rl98-image.image?rcl=202509192002060BB405B5C3F7C01FCD19&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1758888127&amp;x-signature=d4pqozKU25qnx3R76vWMKZZkeCA%3D" alt="我的世界原版1.21.4服务器场景" class="w-full h-64 object-cover">
+                        <div class="absolute -bottom-6 -left-6 bg-primary text-white p-4 rounded-lg block-shadow hidden md:block">
+                            <p class="font-minecraft">版本: 1.21.4</p>
+                        </div>
+                        <div class="absolute -top-6 -right-6 bg-secondary text-dark p-4 rounded-lg block-shadow hidden md:block">
+                            <p class="font-minecraft">原版生存</p>
+                        </div>
+                    </div>
+                    <div class="p-8 pt-12">
+                        <h3 class="text-2xl font-bold mb-4 text-secondary">纯净的原版体验</h3>
+                        <p class="mb-4 text-light/80 leading-relaxed">我们的原版1.21.4服务器提供最纯粹的Minecraft生存体验，紧跟官方最新版本，让你第一时间体验到Minecraft的全新内容。仅仅添加了一下辅助保护的模组，让您能回归游戏最本质的乐趣和保护您的领地安全！</p>
+                        <p class="mb-6 text-light/80 leading-relaxed">服务器采用最新的1.21.4版本，包含了考古系统、风蚀生物、锻造系统等全部最新特性。我们仅添加了必要的插件来维护服务器秩序和提供便捷功能，不影响游戏的原汁原味。适合喜欢纯净生存、红石科技和建筑创作的玩家。</p>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-dark/50 p-3 rounded-lg border border-primary/30">
+                                <div class="text-2xl text-primary mb-1"><i class="fa fa-code-fork"></i></div>
+                                <h4 class="font-semibold mb-1 text-sm">最新版本</h4>
+                                <p class="text-xs text-light/70">基于1.21.4官方版本</p>
+                            </div>
+                            <div class="bg-dark/50 p-3 rounded-lg border border-primary/30">
+                                <div class="text-2xl text-primary mb-1"><i class="fa fa-certificate"></i></div>
+                                <h4 class="font-semibold mb-1 text-sm">纯净体验</h4>
+                                <p class="text-xs text-light/70">无模组，原汁原味</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 特色玩法 -->
+    <section id="features" class="py-20 bg-dark/90 relative overflow-hidden">
+        <!-- 背景装饰 -->
+        <div class="absolute top-0 left-0 w-full h-full opacity-10">
+            <div class="absolute top-10 left-10 w-40 h-40 rounded-full bg-primary/30 blur-3xl"></div>
+            <div class="absolute bottom-10 right-10 w-60 h-60 rounded-full bg-secondary/30 blur-3xl"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,4vw,3rem)] font-minecraft text-primary mb-4">特色玩法</h2>
+                <div class="w-32 h-1 bg-secondary mx-auto mb-6"></div>
+                <p class="max-w-2xl mx-auto text-light/70">
+                    我们为两个服务器精心设计了多种特色玩法，让你的游戏体验更加丰富多样
+                </p>
+            </div>
+            
+            <!-- 合并所有特色内容 -->
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- 落幕曲特色 -->
+                <div class="bg-dark/60 backdrop-blur-sm rounded-lg overflow-hidden border border-primary/20 transition-all hover:border-primary/50 hover:transform hover:-translate-y-2 duration-300 block-shadow">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/4d0bab9fb0714687ad739597e9c9eea6~tplv-a9rns2rl98-image.image?rcl=20250919183841FD7DAFAEBC65E23CAC92&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1758883123&amp;x-signature=UMJ0lwakJ2xwSvNC7JpFs9Yw13g%3D" alt="拔刀剑系统" class="w-full h-full object-cover transition-transform hover:scale-110 duration-500">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3 text-secondary">拔刀剑系统</h3>
+                        <p class="text-light/70 mb-3">三大平衡路线，满足不同战斗风格：</p>
+                        <ul class="text-light/70 text-sm space-y-1">
+                            <li>• 迅捷路线：快速连击，低伤害高频率</li>
+                            <li>• 力量路线：高伤害，破甲效果，慢攻击</li>
+                            <li>• 元素路线：附加元素伤害，范围效果</li>
+                        </ul>
+                        <p class="text-light/70 mt-3 text-sm">每条路线均有6个等级，合成难度递增，属性平衡。</p>
+                    </div>
+                </div>
+                
+                <div class="bg-dark/60 backdrop-blur-sm rounded-lg overflow-hidden border border-primary/20 transition-all hover:border-primary/50 hover:transform hover:-translate-y-2 duration-300 block-shadow">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/25679b4b9a8949498c6c2bf79f0c5652~tplv-a9rns2rl98-image.image?rcl=202509191855455CED101A045932A4AB42&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1758884146&amp;x-signature=GEmo6qX3utDRWSlumXUcapxEAOI%3D" alt="任务系统" class="w-full h-full object-cover transition-transform hover:scale-110 duration-500">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3 text-secondary">任务系统</h3>
+                        <p class="text-light/70">大部分复杂任务都有详细说明，并带有配图，任务之间可以相互跳转至相关任务，奖励丰富</p>
+                    </div>
+                </div>
+                
+                <div class="bg-dark/60 backdrop-blur-sm rounded-lg overflow-hidden border border-primary/20 transition-all hover:border-primary/50 hover:transform hover:-translate-y-2 duration-300 block-shadow">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/407133f1162b4b53b6d736ae158e516c~tplv-a9rns2rl98-image.image?rcl=20250919185641390E0250F5358FC70553&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1758884201&amp;x-signature=yjkh8z8x8FPFLtBRsQ7qkVBfHsg%3D" alt="玩家经济" class="w-full h-full object-cover transition-transform hover:scale-110 duration-500">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3 text-secondary">枪械方面</h3>
+                        <p class="text-light/70">可以从各种地方获取到大量的子弹材料，中后期，可以获得无限弹药盒来提供无限量的弹药。</p>
+                    </div>
+                </div>
+                
+                <div class="bg-dark/60 backdrop-blur-sm rounded-lg overflow-hidden border border-primary/20 transition-all hover:border-primary/50 hover:transform hover:-translate-y-2 duration-300 block-shadow">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/b459db15a2444f5297afe1307f0edb59~tplv-a9rns2rl98-image.image?rcl=2025091918552188B09E517CDFB0D98E33&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1758884122&amp;x-signature=j1ZR8hN6G%2BNmpmX4YLMBlTLKuk0%3D" alt="社区活动" class="w-full h-full object-cover transition-transform hover:scale-110 duration-500">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3 text-secondary">便捷房屋</h3>
+                        <p class="text-light/70">开局可利用初始物资里的小屋获得庇护所，有多种类型可选。选定后点击建造，还能通过预览确定合适位置。</p>
+                    </div>
+                </div>
+                
+                <!-- 原版特色 -->
+                <div class="bg-dark/60 backdrop-blur-sm rounded-lg overflow-hidden border border-primary/20 transition-all hover:border-primary/50 hover:transform hover:-translate-y-2 duration-300 block-shadow">
+                    <div class="h-48 overflow-hidden">
+                        <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/97390d6394b44c098991f4ef3d127f7d~tplv-a9rns2rl98-image.image?rcl=20250919202639034DEC3B781D4D0A0D26&amp;rk3s=8e244e95&amp;rrcfp=2609e108&amp;x-expires=1758889603&amp;x-signature=uIFmqhuCbAVhbEmnqyn0h4go2BQ%3D" alt="领地保护" class="w-full h-full object-cover transition-transform hover:scale-110 duration-500">
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-3 text-secondary">领地保护系统</h3>
+                        <p class="text-light/70">工作台可以合成：&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;
+临时，半径为 10的领地
+加固，半径为 25的领地
+闪闪发光，半径为 50的领地
+水晶，半径为 75的领地
+Emeradic，半径为 125的领地
+枯萎，半径为 200的领地&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+ps：合成领地显示头盔才能看见自己领地范围</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 拔刀剑路线详情 -->
+            <div class="mt-16 bg-dark/60 backdrop-blur-sm rounded-lg p-8 border border-primary/30">
+                <h3 class="text-2xl font-bold mb-6 text-secondary text-center">拔刀剑路线详情（落幕曲服务器）</h3>
+                
+                <div class="grid md:grid-cols-3 gap-8">
+                    <!-- 迅捷路线 -->
+                    <div>
+                        <h4 class="text-xl font-semibold mb-4 text-primary border-b border-primary/30 pb-2">迅捷路线</h4>
+                        <ul class="space-y-3">
+                            <li class="flex justify-between items-center">
+                                <span>1级：风刃木剑</span>
+                                <span class="text-xs bg-secondary/20 px-2 py-1 rounded">木剑+羽毛×3</span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>2级：迅捷铁剑</span>
+                                <span class="text-xs bg-secondary/20 px-2 py-1 rounded">铁剑+线×5</span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>3级：疾风银剑</span>
+                                <span class="text-xs bg-secondary/20 px-2 py-1 rounded">银剑+兔子脚×2</span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>4级：闪电之刃</span>
+                                <span class="text-xs bg-secondary/20 px-2 py-1 rounded">钻石剑+下界之星碎片</span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>5级：暴风之剑</span>
+                                <span class="text-xs bg-secondary/20 px-2 py-1 rounded">闪电之刃+龙息×2</span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>6级：风神之剑</span>
+                                <span class="text-xs bg-secondary/20 px-2 py-1 rounded">暴风之剑+末影龙鳞片</span>
+                            </li>
+                        </ul>
+                        <p class="mt-4 text-sm text-light/60">特点：攻击速度+70%，伤害中等，有概率造成击退效果</p>
+                    </div>
+                    
+                    <!-- 力量路线 -->
+                    <div>
+                        <h4 class="text-xl font-semibold mb-4 text-primary border-b border-primary/30 pb-2">力量路线</h4>
+                        <ul class="space-y-3">
+                            <li class="flex justify-between items-center">
+                                <span>1级：重铁剑</span>
+                                <span class="text-xs bg-secondary/20 px-2 py-1 rounded">铁剑+铁块×2</span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>2级：粉碎者</span>
+                                <span class="text-xs bg-secondary/20 px-2 py-1 rounded">重铁剑+黑曜石×3</span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>3级：巨力战斧</span>
+                                <span class="text-xs bg-secondary/20 px-2 py-1 rounded">钻石剑+金块×2</span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>4级：大地之怒</span>
+                                <span class="text-xs bg-secondary/20 px-2 py-1 rounded">巨力战斧+岩浆膏×4</span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>5级：泰坦之刃</span>
+                                <span class="text-xs bg-secondary/20 px-2 py-1 rounded">大地之怒+下界合金锭×2</span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>6级：盘古开天</span>
+                                <span class="text-xs bg-secondary/20 px-2 py-1 rounded">泰坦之刃+远古残骸×3</span>
+                            </li>
+                        </ul>
+                        <p class="mt-4 text-sm text-light/60">特点：伤害+120%，攻击速度-30%，有概率造成破甲效果</p>
+                    </div>
+                    
+                    <!-- 元素路线 -->
+                    <div>
+                        <h4 class="text-xl font-semibold mb-4 text-primary border-b border-primary/30 pb-2">元素路线</h4>
+                        <ul class="space-y-3">
+                            <li class="flex justify-between items-center">
+                                <span>1级：火焰木剑</span>
+                                <span class="text-xs bg-secondary/20 px-2 py-1 rounded">木剑+火焰棒×1</span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>2级：冰霜短剑</span>
+                                <span class="text-xs bg-secondary/20 px-2 py-1 rounded">铁剑+冰粒×8</span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>3级：雷电法杖</span>
+                                <span class="text-xs bg-secondary/20 px-2 py-1 rounded">金剑+附魔之瓶×2</span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>4级：元素融合</span>
+                                <span class="text-xs bg-secondary/20 px-2 py-1 rounded">钻石剑+各种元素精华</span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>5级：自然之力</span>
+                                <span class="text-xs bg-secondary/20 px-2 py-1 rounded">元素融合+龙蛋碎片</span>
+                            </li>
+                            <li class="flex justify-between items-center">
+                                <span>6级：混沌之刃</span>
+                                <span class="text-xs bg-secondary/20 px-2 py-1 rounded">自然之力+末影水晶×2</span>
+                            </li>
+                        </ul>
+                        <p class="mt-4 text-sm text-light/60">特点：附加元素伤害，小范围AOE效果，中等速度</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 服务器状态 -->
+    <section class="py-16 bg-gradient-to-r from-primary/20 to-secondary/20">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="bg-dark/80 backdrop-blur-md p-6 rounded-lg border border-primary/30 text-center transform transition-transform hover:scale-105 duration-300">
+                    <h3 class="text-xl font-bold mb-4">落幕曲生存服务器</h3>
+                    <div class="flex items-center justify-center space-x-2 mb-4">
+                        <span class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
+                        <span class="text-green-400 font-medium">在线</span>
+                    </div>
+                    <p class="text-light/70">IP: 888.jingtian8.qzz.io</p>
+                </div>
+                
+                <div class="bg-dark/80 backdrop-blur-md p-6 rounded-lg border border-primary/30 text-center transform transition-transform hover:scale-105 duration-300">
+                    <h3 class="text-xl font-bold mb-4">原版1.21.4生存服务器</h3>
+                    <div class="flex items-center justify-center space-x-2 mb-4">
+                        <span class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></span>
+                        <span class="text-green-400 font-medium">在线</span>
+                    </div>
+                    <p class="text-light/70">IP: 88.jingtian8.qzz.io</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 服务器规则 -->
+    <section id="rules" class="py-20 bg-dark">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,4vw,3rem)] font-minecraft text-primary mb-4">服务器规则</h2>
+                <div class="w-32 h-1 bg-secondary mx-auto mb-6"></div>
+                <p class="max-w-2xl mx-auto text-light/70">
+                    为了维护良好的游戏环境，请所有玩家遵守以下规则
+                </p>
+            </div>
+            
+            <div class="max-w-3xl mx-auto">
+                <div class="bg-dark/60 backdrop-blur-sm rounded-lg p-8 border border-primary/20 mb-10">
+                    <h3 class="text-xl font-bold mb-6 text-secondary flex items-center">
+                        <i class="fa fa-exclamation-circle mr-2"></i> 基本规则
+                    </h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                            <span>尊重所有玩家，禁止任何形式的辱骂、歧视或骚扰行为</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                            <span>禁止使用任何作弊客户端、外挂或利用漏洞</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                            <span>禁止恶意破坏他人建筑和偷窃行为</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                            <span>禁止发布任何违法、色情或不适当内容</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                            <span>禁止刷屏或发送垃圾信息</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="bg-dark/60 backdrop-blur-sm rounded-lg p-8 border border-primary/20">
+                    <h3 class="text-xl font-bold mb-6 text-secondary flex items-center">
+                        <i class="fa fa-building-o mr-2"></i> 建筑与领地规则
+                    </h3>
+                    <ul class="space-y-4">
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                            <span>请合理规划你的建筑，避免过度占用公共资源</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                            <span>重要建筑请及时防止领地方块保护起来</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                            <span>可以建造任何您想建的东西，卡服机除外！！！</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fa fa-check-circle text-primary mt-1 mr-3"></i>
+                            <span>长时间未上线的废弃建筑不会被清理！</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="mt-8 text-center text-light/60">
+                    <p>违反规则将根据情节轻重给予警告、禁言、临时封禁或永久封禁处理</p>
+                    <p class="mt-2">如有疑问或需要举报，请联系管理员q号：3818551982</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 加入我们 -->
+    <section id="join" class="py-20 bg-gradient-to-b from-dark to-dark/90 relative overflow-hidden">
+        <!-- 背景装饰 -->
+        <div class="absolute top-0 left-0 w-full h-full">
+            <div class="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-primary/10 blur-3xl"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-secondary/10 blur-3xl"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,4vw,3rem)] font-minecraft text-primary mb-4">加入我们</h2>
+                <div class="w-32 h-1 bg-secondary mx-auto mb-6"></div>
+                <p class="max-w-2xl mx-auto text-light/70">
+                    准备好开始你的冒险了吗？以下是两个服务器的加入方式，选择你喜欢的体验吧
+                </p>
+            </div>
+            
+            <!-- 管理员信息 -->
+            <div class="max-w-5xl mx-auto mb-16">
+                <h3 class="text-2xl font-bold mb-8 text-secondary text-center">服务器管理团队（交流q群1060232002）</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                    <!-- 1号管理员 -->
+                    <div class="bg-dark/60 backdrop-blur-sm rounded-lg p-6 border border-primary/30 transition-all hover:border-primary/60 transform hover:scale-105 duration-300 text-center">
+                        <div class="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center mx-auto mb-4 border-2 border-primary">
+                            <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/261b4638010446a6a8b4eeadaeccd623~tplv-a9rns2rl98-image.image?rcl=20250919222335CB94EB53F229EA1C62CE&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1758896616&amp;x-signature=bXdlA88IFo%2FKXDOV0GKd%2F4hO6Pk%3D" alt="jingtian管理员头像" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="text-xl font-bold text-secondary">jingtian</h4>
+                        <p class="text-primary font-minecraft mt-1">创始人 / 管理员</p>
+                        <div class="mt-3 bg-dark/40 rounded-lg p-3 text-sm">
+                            <p class="text-light/70">摆烂了，有事问管理员，我qq：3818551982</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 新增管理员：高孤之凉 -->
+                    <div class="bg-dark/60 backdrop-blur-sm rounded-lg p-6 border border-primary/30 transition-all hover:border-primary/60 transform hover:scale-105 duration-300 text-center">
+                        <div class="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center mx-auto mb-4 border-2 border-primary">
+                            <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/dc51ba70f9424286a0c72e7b36559375~tplv-a9rns2rl98-image.image?rcl=202509192223405C987082A20D39095F90&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1758896621&amp;x-signature=gWMnKhZjz9fWj%2Bbc8K6d2i790js%3D" alt="高孤之凉管理员头像" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="text-xl font-bold text-secondary">高孤之凉</h4>
+                        <p class="text-primary font-minecraft mt-1">高级管理员</p>
+                        <div class="mt-3 bg-dark/40 rounded-lg p-3 text-sm">
+                            <p class="text-light/70">负责服务器日常管理</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 2号管理员 -->
+                    <div class="bg-dark/60 backdrop-blur-sm rounded-lg p-6 border border-primary/30 transition-all hover:border-primary/60 transform hover:scale-105 duration-300 text-center">
+                        <div class="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center mx-auto mb-4 border-2 border-primary">
+                            <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/e0eaa306c7544b578089786ca75a9b08~tplv-a9rns2rl98-image.image?rcl=202509192223538F6B2EC0578F684A00EE&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1758896633&amp;x-signature=p6QpYNZCuePSMJGCsYAEEwp7hRs%3D" alt="洋芋管理员头像" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="text-xl font-bold text-secondary">洋芋 (yy)</h4>
+                        <p class="text-primary font-minecraft mt-1">管理员</p>
+                        <div class="mt-3 bg-dark/40 rounded-lg p-3 text-sm">
+                            <p class="text-light/70">辅助服务器管理</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 3号管理员 -->
+                    <div class="bg-dark/60 backdrop-blur-sm rounded-lg p-6 border border-primary/30 transition-all hover:border-primary/60 transform hover:scale-105 duration-300 text-center">
+                        <div class="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center mx-auto mb-4 border-2 border-primary">
+                            <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/ce68510b620f46899a235380ad1acb1d~tplv-a9rns2rl98-image.image?rcl=202509192223584A62B9BC1810BB9B4EF4&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1758896639&amp;x-signature=B7eQBI1W5g%2FXofhjBYs%2Fh8%2BUqFg%3D" alt="JackyYou管理员头像" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="text-xl font-bold text-secondary">JackyYou</h4>
+                        <p class="text-primary font-minecraft mt-1">辅助管理员</p>
+                        <div class="mt-3 bg-dark/40 rounded-lg p-3 text-sm">
+                            <p class="text-light/70">协助管理服务器</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 4号管理员 -->
+                    <div class="bg-dark/60 backdrop-blur-sm rounded-lg p-6 border border-primary/30 transition-all hover:border-primary/60 transform hover:scale-105 duration-300 text-center">
+                        <div class="w-20 h-20 rounded-full overflow-hidden flex items-center justify-center mx-auto mb-4 border-2 border-primary">
+                            <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/329a86c4c3db48a3bfe5878e018af010~tplv-a9rns2rl98-image.image?rcl=202509192250538BF61BBDE1C6FA8F6929&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1758898254&amp;x-signature=%2FUPmIktdcG4zh%2FZniLkmUHDPhjY%3D" alt="劳姆管理员头像" class="w-full h-full object-cover">
+                        </div>
+                        <h4 class="text-xl font-bold text-secondary">xiaoma</h4>
+                        <p class="text-primary font-minecraft mt-1">辅助管理员</p>
+                        <div class="mt-3 bg-dark/40 rounded-lg p-3 text-sm">
+                            <p class="text-light/70">协助管理服务器</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grid md:grid-cols-2 gap-10 max-w-5xl mx-auto">
+                <!-- 落幕曲加入方式 -->
+                <div class="bg-dark/60 backdrop-blur-sm rounded-lg border border-primary/30 overflow-hidden block-shadow">
+                    <div class="bg-primary/20 p-4">
+                        <h3 class="text-2xl font-bold text-secondary">加入落幕曲服务器</h3>
+                    </div>
+                    <div class="p-8">
+                        <div class="space-y-6">
+                            <div class="flex">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold mr-4">1</div>
+                                <div>
+                                    <h4 class="font-semibold mb-1">准备游戏</h4>
+                                    <p class="text-light/70">确保你已安装落幕曲1.4.6整合包</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold mr-4">2</div>
+                                <div>
+                                    <h4 class="font-semibold mb-1">添加服务器</h4>
+                                    <p class="text-light/70">在多人游戏中添加服务器，地址：<span class="text-primary font-minecraft">888.jingtian8.qzz.io</span></p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold mr-4">3</div>
+                                <div>
+                                    <h4 class="font-semibold mb-1">加入社区</h4>
+                                    <p class="text-light/70">加入我们的企鹅社区，获取最新资讯和帮助1060232002</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold mr-4">4</div>
+                                <div>
+                                    <h4 class="font-semibold mb-1">开始冒险</h4>
+                                    <p class="text-light/70">首次打开pcl，需要自己设置下密码，然后才能开始您的落幕曲之旅</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8 pt-6 border-t border-primary/20">
+                            <h4 class="font-semibold mb-4 text-secondary">服务器信息</h4>
+                            <div class="space-y-3">
+                                <div class="flex items-center">
+                                    <div class="w-8 text-primary"><i class="fa fa-server"></i></div>
+                                    <div class="ml-3">
+                                        <p class="text-light/60 text-xs">服务器地址</p>
+                                        <p class="font-minecraft text-primary text-sm">888.jingtian8.qzz.io</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center">
+                                    <div class="w-8 text-primary"><i class="fa fa-users"></i></div>
+                                    <div class="ml-3">
+                                        <p class="text-light/60 text-xs">交流群</p>
+                                        <p class="font-minecraft text-primary text-sm">1060232002</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center">
+                                    <div class="w-8 text-primary"><i class="fa fa-gamepad"></i></div>
+                                    <div class="ml-3">
+                                        <p class="text-light/60 text-xs">落幕曲游戏版本</p>
+                                        <p class="font-minecraft text-primary text-sm">1.4.6</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center">
+                                    <div class="w-8 text-primary"><i class="fa fa-users"></i></div>
+                                    <div class="ml-3">
+                                        <p class="text-light/60 text-xs">最大在线人数</p>
+                                        <p class="font-minecraft text-primary text-sm">5201314人</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 原版服务器加入方式 -->
+                <div class="bg-dark/60 backdrop-blur-sm rounded-lg border border-primary/30 overflow-hidden block-shadow">
+                    <div class="bg-primary/20 p-4">
+                        <h3 class="text-2xl font-bold text-secondary">加入原版1.21.4服务器</h3>
+                    </div>
+                    <div class="p-8">
+                        <div class="space-y-6">
+                            <div class="flex">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold mr-4">1</div>
+                                <div>
+                                    <h4 class="font-semibold mb-1">准备游戏</h4>
+                                    <p class="text-light/70">确保你拥有Minecraft 1.21.4官方版本客户端</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold mr-4">2</div>
+                                <div>
+                                    <h4 class="font-semibold mb-1">添加服务器</h4>
+                                    <p class="text-light/70">在多人游戏中添加服务器，地址：<span class="text-primary font-minecraft">88.jingtian8.qzz.io</span></p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold mr-4">3</div>
+                                <div>
+                                    <h4 class="font-semibold mb-1">加入社区</h4>
+                                    <p class="text-light/70">加入我们的企鹅社区，获取最新资讯和帮助1060232002</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex">
+                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-primary flex items-center justify-center text-white font-bold mr-4">4</div>
+                                <div>
+                                    <h4 class="font-semibold mb-1">开始冒险</h4>
+                                    <p class="text-light/70">首次登录需同意服务器规则，然后即可开始你的原版生存之旅</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8 pt-6 border-t border-primary/20">
+                            <h4 class="font-semibold mb-4 text-secondary">服务器信息</h4>
+                            <div class="space-y-3">
+                                <div class="flex items-center">
+                                    <div class="w-8 text-primary"><i class="fa fa-server"></i></div>
+                                    <div class="ml-3">
+                                        <p class="text-light/60 text-xs">服务器地址</p>
+                                        <p class="font-minecraft text-primary text-sm">88.jingtian8.qzz.io</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center">
+                                    <div class="w-8 text-primary"><i class="fa fa-users"></i></div>
+                                    <div class="ml-3">
+                                        <p class="text-light/60 text-xs">交流群</p>
+                                        <p class="font-minecraft text-primary text-sm">1060232002</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center">
+                                    <div class="w-8 text-primary"><i class="fa fa-gamepad"></i></div>
+                                    <div class="ml-3">
+                                        <p class="text-light/60 text-xs">游戏版本</p>
+                                        <p class="font-minecraft text-primary text-sm">1.21.4</p>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex items-center">
+                                    <div class="w-8 text-primary"><i class="fa fa-users"></i></div>
+                                    <div class="ml-3">
+                                        <p class="text-light/60 text-xs">最大在线人数</p>
+                                        <p class="font-minecraft text-primary text-sm">5201314人</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 赞助我们页面 -->
+    <section id="sponsor" class="py-20 bg-dark/95 relative overflow-hidden">
+        <!-- 背景装饰 -->
+        <div class="absolute top-0 left-0 w-full h-full">
+            <div class="absolute top-1/3 right-1/4 w-96 h-96 rounded-full bg-secondary/10 blur-3xl"></div>
+            <div class="absolute bottom-1/3 left-1/4 w-96 h-96 rounded-full bg-primary/10 blur-3xl"></div>
+        </div>
+        
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,4vw,3rem)] font-minecraft text-primary mb-4">赞助我们</h2>
+                <div class="w-32 h-1 bg-secondary mx-auto mb-6"></div>
+                <p class="max-w-2xl mx-auto text-light/70">
+                    您的支持是服务器持续发展的动力！所有赞助资金将全部用于服务器维护、升级和社区活动
+                </p>
+            </div>
+            
+            <!-- 赞助说明 -->
+            <div class="max-w-3xl mx-auto bg-dark/60 backdrop-blur-sm rounded-lg p-8 border border-primary/30 mb-16 block-shadow">
+                <h3 class="text-2xl font-bold mb-6 text-secondary text-center">为什么需要您的赞助？</h3>
+                <p class="text-light/80 mb-6 leading-relaxed">我们主打的是优质的Minecraft服务器，而这也是需要持续投入服务器租用、带宽、域名、等成本。我们一直致力于提供免费且优质的游戏体验，但随着玩家数量增加和功能需求提升，服务器压力过大，还需要扩容。导致成本不断增加</p>
+                <p class="text-light/80 leading-relaxed">您的每一笔赞助都将直接用于：服务器硬件升级以提供更流畅的体验、增加服务器带宽以降低延迟、开发新的特色玩法和活动、购买正版插件提升游戏体验。所有资金使用情况将在群公告以及本站公开！感谢您的大力支持才会有今天的我们！</p>
+            </div>
+            
+            <!-- 赞助方式 - 仅保留微信支付 -->
+            <div class="max-w-3xl mx-auto bg-dark/60 backdrop-blur-sm rounded-lg p-8 border border-primary/30 block-shadow mb-16">
+                <h3 class="text-2xl font-bold mb-6 text-secondary text-center">赞助方式</h3>
+                
+                <div class="space-y-6">
+                    <div class="p-6 bg-dark/40 rounded-lg border border-primary/20">
+                        <h4 class="text-xl font-semibold mb-4 text-primary flex items-center">
+                            <i class="fa fa-weixin mr-2 text-green-500"></i> 微信支付
+                        </h4>
+                        <div class="flex flex-col md:flex-row items-center gap-6">
+                            <div class="bg-white p-4 rounded-lg">
+                                <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/2e9f4d09faca4133a5dbcd581a8760da~tplv-a9rns2rl98-image.image?rcl=20250919231110144C7D3687F9527526AB&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1758899471&amp;x-signature=9LOyWCyEAdmhdJIv8Op3Yf7bcVU%3D" alt="微信支付二维码" class="w-48 h-48 object-cover">
+                            </div>
+                            <div>
+                                <p class="mb-2">请先添加上方的q客服3818551982</p>
+                                <p class="mb-2">支付备注请填写：<span class="font-minecraft text-primary">您的游戏里面的ID&nbsp;</span></p>
+                                <p class="text-sm text-light/60">注意：为了及时发放附加福利，请先添加客服再赞助，谢谢</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-8 p-4 bg-secondary/10 rounded-lg border border-secondary/30">
+                    <p class="text-center text-light/80">所有赞助均为自愿行为，我们承诺不会因为是否赞助而区别对待玩家。赞助权益仅为感谢支持的附加福利。</p>
+                </div>
+            </div>
+            
+            <!-- 赞助鸣谢 - 仅保留2个位置 -->
+            <div class="max-w-5xl mx-auto mt-16">
+                <h3 class="text-2xl font-bold mb-8 text-secondary text-center">赞助鸣谢</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-md mx-auto">
+                    <div class="bg-dark/60 backdrop-blur-sm rounded-lg p-6 text-center border border-primary/30 transition-all hover:border-primary/60 transform hover:scale-105 duration-300 sponsor-badge">
+                        <p class="font-minecraft text-primary text-xl">高孤之凉</p>
+                        <p class="text-light/60 mt-2">赞助 88元</p>
+                        <div class="mt-4 inline-block bg-primary/20 text-primary text-sm px-3 py-1 rounded-full">
+                            特别感谢
+                        </div>
+                    </div>
+                    
+                    <div class="bg-dark/60 backdrop-blur-sm rounded-lg p-6 text-center border border-primary/30 transition-all hover:border-primary/60 transform hover:scale-105 duration-300">
+                        <p class="font-minecraft text-primary text-xl">yy（洋芋）</p>
+                        <p class="text-light/60 mt-2">赞助 15元</p>
+                        <div class="mt-4 inline-block bg-primary/20 text-primary text-sm px-3 py-1 rounded-full">
+                            感谢支持
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 玩家展示 -->
+    <section class="py-20 bg-dark/95">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,4vw,3rem)] font-minecraft text-primary mb-4">玩家作品展示</h2>
+                <div class="w-32 h-1 bg-secondary mx-auto mb-6"></div>
+                <p class="max-w-2xl mx-auto text-light/70">
+                    欣赏我们社区玩家的精彩创作，也许下一个展示的就是你的作品
+                </p>
+            </div>
+            
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="group relative overflow-hidden rounded-lg block-shadow">
+                    <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/35fa81dc08654aea87b91f43ed661116~tplv-a9rns2rl98-image.image?rcl=20250919195222C031432896BC21BF751A&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1758887543&amp;x-signature=gTl%2FwCjaroYKCxN3KmBxjO1awqs%3D" alt="玩家建筑作品：天空城堡" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                        <div class="p-4 w-full">
+                            <h3 class="text-lg font-bold">副腐竹的家</h3>
+                            <p class="text-sm text-light/80">作者: 高孤之凉</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="group relative overflow-hidden rounded-lg block-shadow">
+                    <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/85fe164e8cf2489ba9428a17e78b1395~tplv-a9rns2rl98-image.image?rcl=2025091919515831D13417F1C54FB8E9C5&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1758887518&amp;x-signature=N1Fb7Zh52OUIMXeuIoBimULIS28%3D" alt="玩家建筑作品：海底宫殿" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                        <div class="p-4 w-full">
+                            <h3 class="text-lg font-bold">
+</h3>
+                            <p class="text-sm text-light/80">作者：何必太投入</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="group relative overflow-hidden rounded-lg block-shadow">
+                    <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/1fa47fef1f6d43f5bc608d84f707a943~tplv-a9rns2rl98-image.image?rcl=20250919224115B42B1111EA300DB7E5E9&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1758897676&amp;x-signature=mpw74Scp66u%2BxXWzzexMfh4EgFA%3D" alt="玩家建筑作品：中世纪村庄" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                        <div class="p-4 w-full">
+                            <h3 class="text-lg font-bold">
+</h3>
+                            <p class="text-sm text-light/80">作者：tom</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="group relative overflow-hidden rounded-lg block-shadow">
+                    <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/18b422b3ccba44f3966142aa84e5c63e~tplv-a9rns2rl98-image.image?rcl=20250919195214C031432896BC21BF6F68&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1758887534&amp;x-signature=5EixE9hELCOFM3MjvDvw0720uUY%3D" alt="玩家建筑作品：现代都市" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                        <div class="p-4 w-full">
+                            <h3 class="text-lg font-bold">
+</h3>
+                            <p class="text-sm text-light/80">作者：jingtian</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="group relative overflow-hidden rounded-lg block-shadow">
+                    <img src="https://p9-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/512faaa38fd54ee291f4bf18cb2ba7d4~tplv-a9rns2rl98-image.image?rcl=2025091919522997D002D9A1E010558F7C&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1758887549&amp;x-signature=LAlEmeMp32ZM3nebaIwvqNeSQOA%3D" alt="玩家建筑作品：红石机械" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                        <div class="p-4 w-full">
+                            <h3 class="text-lg font-bold">
+</h3>
+                            <p class="text-sm text-light/80">作者：洋芋（yy）</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="group relative overflow-hidden rounded-lg block-shadow">
+                    <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/84bc6d3182ba4304b7e52adee70b3aad~tplv-a9rns2rl98-image.image?rcl=20250919223828B42B1111EA300DB77C1C&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1758897509&amp;x-signature=Qh%2Bgh42l8Y9PF0Oucf%2Fh9O9mudI%3D" alt="玩家建筑作品：自然园林" class="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-110">
+                    <div class="absolute inset-0 bg-gradient-to-t from-dark to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end">
+                        <div class="p-4 w-full">
+                            <h3 class="text-lg font-bold">
+</h3>
+                            <p class="text-sm text-light/80">作者：tom</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-10">
+                <a href="#" class="inline-flex items-center px-6 py-3 bg-primary/20 hover:bg-primary/30 border border-primary/40 text-primary rounded-lg font-semibold transition-all">
+                    查看更多作品 <i class="fa fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 常见问题 -->
+    <section class="py-20 bg-dark">
+        <div class="container mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-[clamp(1.8rem,4vw,3rem)] font-minecraft text-primary mb-4">常见问题</h2>
+                <div class="w-32 h-1 bg-secondary mx-auto mb-6"></div>
+                <p class="max-w-2xl mx-auto text-light/70">
+                    关于服务器的常见问题解答，如有其他疑问请联系我们
+                </p>
+            </div>
+            
+            <div class="max-w-3xl mx-auto">
+                <div class="space-y-4">
+                    <!-- 问题1 -->
+                    <div class="bg-dark/60 backdrop-blur-sm rounded-lg border border-primary/20 overflow-hidden">
+                        <button class="faq-toggle w-full text-left p-6 focus:outline-none flex justify-between items-center">
+                            <span class="font-semibold">如何申请领地保护？</span>
+                            <i class="fa fa-chevron-down text-primary transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content hidden px-6 pb-6">
+                            <p class="text-light/70">当你建造了需要保护的建筑后，可以使用在工作台中合成领地方块，放在地上即可，区域大小以您合成的领地方块等级上显示的半径为准，随着你在服务器将领地方块的等级提升，可获得更大的领地面</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 问题2 -->
+                    <div class="bg-dark/60 backdrop-blur-sm rounded-lg border border-primary/20 overflow-hidden">
+                        <button class="faq-toggle w-full text-left p-6 focus:outline-none flex justify-between items-center">
+                            <span class="font-semibold">服务器有什么惩罚机制？</span>
+                            <i class="fa fa-chevron-down text-primary transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content hidden px-6 pb-6">
+                            <p class="text-light/70">
+                                我们采用三级惩罚机制：第一次违规给予警告；第二次违规视情节轻重给予24-72小时禁言或封禁；第三次严重违规将给予永久封禁。对于使用外挂、恶意破坏等严重行为，将直接永久封禁。
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- 问题3 -->
+                    <div class="bg-dark/60 backdrop-blur-sm rounded-lg border border-primary/20 overflow-hidden">
+                        <button class="faq-toggle w-full text-left p-6 focus:outline-none flex justify-between items-center">
+                            <span class="font-semibold">可以使用mod吗？</span>
+                            <i class="fa fa-chevron-down text-primary transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content hidden px-6 pb-6">
+                            <p class="text-light/70">落幕曲服务器已整合所需mod，请勿额外添加；原版服务器允许使用纯视觉类mod（如光影、小地图、材质包），但禁止使用任何具有作弊功能的mod（如透视、飞行、自动挖矿等），可以自己添加小地图，一键整理这些辅助模组！</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 问题4 -->
+                    <div class="bg-dark/60 backdrop-blur-sm rounded-lg border border-primary/20 overflow-hidden">
+                        <button class="faq-toggle w-full text-left p-6 focus:outline-none flex justify-between items-center">
+                            <span class="font-semibold">如何获得游戏币？</span>
+                            <i class="fa fa-chevron-down text-primary transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content hidden px-6 pb-6">
+                            <p class="text-light/70">
+                                游戏币可以通过多种方式获得：完成服务器任务、出售资源给NPC商店、与其他玩家交易、参加社区活动等。你也可以通过社区的贡献活动获得额外的游戏币奖励。
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <!-- 问题5 -->
+                    <div class="bg-dark/60 backdrop-blur-sm rounded-lg border border-primary/20 overflow-hidden">
+                        <button class="faq-toggle w-full text-left p-6 focus:outline-none flex justify-between items-center">
+                            <span class="font-semibold">服务器会定期重置吗？</span>
+                            <i class="fa fa-chevron-down text-primary transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content hidden px-6 pb-6">
+                            <p class="text-light/70">我们承诺不会进行全服重置。并保留玩家的任何建筑和物品直至服务器资金无法维持正常运行</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 赞助相关问题 -->
+                    <div class="bg-dark/60 backdrop-blur-sm rounded-lg border border-primary/20 overflow-hidden">
+                        <button class="faq-toggle w-full text-left p-6 focus:outline-none flex justify-between items-center">
+                            <span class="font-semibold">赞助后多久能获得权益？</span>
+                            <i class="fa fa-chevron-down text-primary transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content hidden px-6 pb-6">
+                            <p class="text-light/70">完成赞助并联系管理员确认后，通常会在24小时内为您开通相应的赞助权益。如果超过24小时仍未开通，请再次联系管理员核实。权益会根据您的表现和赞助金额进行有效期制度，但主要还是看日活的表现</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark py-12 border-t border-primary/30">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8">
+                <div>
+                    <div class="flex items-center space-x-2 mb-4">
+                        <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/code_assistant/f0cc298776b847d7a3a15ce265f1de8b~tplv-a9rns2rl98-image.image?rcl=202509191919479D91879538E7D38FA772&amp;rk3s=8e244e95&amp;rrcfp=e75484ac&amp;x-expires=1758885587&amp;x-signature=DQwOiCXdEnWnY%2FnsCo4khie5z6E%3D" alt="服务器LOGO" class="w-8 h-8 rounded-lg">
+                        <h3 class="text-lg font-minecraft text-primary">jingtian的优质服务器</h3>
+                    </div>
+                    <p class="text-light/60 text-sm">
+                        提供优质的Minecraft游戏体验，打造和谐友爱的游戏社区
+                    </p>
+                </div>
+                
+                <div>
+                    <h4 class="text-secondary font-bold mb-4">快速链接</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#home" class="text-light/60 hover:text-primary transition-colors">首页</a></li>
+                        <li><a href="#servers" class="text-light/60 hover:text-primary transition-colors">服务器列表</a></li>
+                        <li><a href="#features" class="text-light/60 hover:text-primary transition-colors">特色玩法</a></li>
+                        <li><a href="#rules" class="text-light/60 hover:text-primary transition-colors">服务器规则</a></li>
+                        <li><a href="#join" class="text-light/60 hover:text-primary transition-colors">加入我们</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-secondary font-bold mb-4">联系我们</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center">
+                            <i class="fa fa-qq text-primary mr-2"></i>
+                            <span class="text-light/60">交流群: 1060232002</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fa fa-user text-primary mr-2"></i>
+                            <span class="text-light/60">管理员QQ: 3818551982</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-secondary font-bold mb-4">服务器状态</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li class="flex items-center">
+                            <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                            <span class="text-light/60">落幕曲服务器: 在线</span>
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                            <span class="text-light/60">原版1.21.4服务器: 在线</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="mt-10 pt-6 border-t border-primary/20 text-center text-light/40 text-sm">
+                <p>© 2025 jingtian的优质服务器 - 本服务器非商业用途，仅为玩家提供交流平台</p>
+                <p class="mt-2">Minecraft 是 Mojang Studios 的注册商标，本服务器与 Mojang Studios 无任何关联</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const navbar = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('py-2', 'bg-dark/90');
+                navbar.classList.remove('py-3', 'bg-dark/80');
+            } else {
+                navbar.classList.add('py-3', 'bg-dark/80');
+                navbar.classList.remove('py-2', 'bg-dark/90');
+            }
+        });
+        
+        // 移动端菜单切换
+        const menuBtn = document.getElementById('menuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        
+        menuBtn.addEventListener('click', function() {
+            mobileMenu.classList.toggle('hidden');
+            const icon = menuBtn.querySelector('i');
+            if (mobileMenu.classList.contains('hidden')) {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            } else {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            }
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                // 关闭移动菜单（如果打开）
+                if (!mobileMenu.classList.contains('hidden')) {
+                    mobileMenu.classList.add('hidden');
+                    const icon = menuBtn.querySelector('i');
+                    icon.classList.remove('fa-times');
+                    icon.classList.add('fa-bars');
+                }
+                
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // FAQ 折叠功能
+        const faqToggles = document.querySelectorAll('.faq-toggle');
+        
+        faqToggles.forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const content = toggle.nextElementSibling;
+                const icon = toggle.querySelector('i');
+                
+                // 切换当前FAQ的显示状态
+                content.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+                
+                // 关闭其他所有FAQ
+                faqToggles.forEach(otherToggle => {
+                    if (otherToggle !== toggle) {
+                        otherToggle.nextElementSibling.classList.add('hidden');
+                        otherToggle.querySelector('i').classList.remove('rotate-180');
+                    }
+                });
+            });
+        });
+    </script>
+</body></html>
